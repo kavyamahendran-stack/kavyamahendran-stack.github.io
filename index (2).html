@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Kavya Mahendran: MSc Management and Business Analytics graduate. Fraud analytics, SQL, Python, Power BI and business analysis projects.">
+<title>Kavya Mahendran Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+/* Layout: one measured column; each project opens with a mono front-matter block, as a technical report would */
+:root {
+  --bg: #F6F7F8;
+  --surface: #FFFFFF;
+  --fg: #15191E;
+  --muted: #5C6773;
+  --line: #DEE2E7;
+  --accent: #1F5F66;
+  --accent-soft: #E4EEEF;
+
+  --display: 'Archivo', system-ui, -apple-system, sans-serif;
+  --body: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1215;
+    --surface: #161A1F;
+    --fg: #E7EAEE;
+    --muted: #98A2AD;
+    --line: #272D35;
+    --accent: #71C5CD;
+    --accent-soft: #15292C;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1215;
+  --surface: #161A1F;
+  --fg: #E7EAEE;
+  --muted: #98A2AD;
+  --line: #272D35;
+  --accent: #71C5CD;
+  --accent-soft: #15292C;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.6;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding-inline: 24px;
+  padding-block: 0 72px;
+}
+
+/* ---------- masthead ---------- */
+
+.masthead {
+  padding-block: 64px 40px;
+  border-bottom: 2px solid var(--fg);
+}
+
+h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(2.1rem, 7vw, 3.1rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  margin: 0 0 18px;
+  text-wrap: balance;
+}
+
+.standfirst {
+  font-size: 1.12rem;
+  color: var(--fg);
+  margin: 0 0 26px;
+  max-width: 54ch;
+}
+
+.contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.01em;
+}
+.contact a { color: var(--accent); text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 1px; }
+.contact a:hover { color: var(--fg); }
+.contact span { color: var(--muted); }
+
+/* ---------- section scaffolding ---------- */
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+section.project {
+  padding-block: 52px;
+  border-bottom: 1px solid var(--line);
+}
+
+h2 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(1.5rem, 4.5vw, 1.95rem);
+  line-height: 1.14;
+  letter-spacing: -0.02em;
+  margin: 0 0 20px;
+  text-wrap: balance;
+}
+
+h3 {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 30px 0 9px;
+}
+
+p { margin: 0 0 15px; max-width: 65ch; }
+p:last-child { margin-bottom: 0; }
+
+/* ---------- front matter ---------- */
+
+.frontmatter {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  margin-bottom: 28px;
+}
+.fm-cell {
+  background: var(--surface);
+  padding: 13px 15px;
+  min-width: 0;
+}
+.fm-key {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 4px;
+}
+.fm-val {
+  font-family: var(--display);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+/* ---------- metrics table ---------- */
+
+.tablewrap { overflow-x: auto; margin: 6px 0 16px; border: 1px solid var(--line); }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 420px;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  background: var(--surface);
+  font-variant-numeric: tabular-nums;
+}
+th, td { padding: 10px 14px; text-align: right; border-bottom: 1px solid var(--line); }
+th:first-child, td:first-child { text-align: left; }
+thead th {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--fg);
+}
+tbody tr:last-child td { border-bottom: none; }
+tr.best td { background: var(--accent-soft); font-weight: 600; }
+.caption {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0 0 16px;
+  max-width: 62ch;
+}
+
+/* ---------- findings ---------- */
+
+ul.findings { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 13px; }
+ul.findings li { display: grid; grid-template-columns: auto 1fr; gap: 13px; align-items: start; max-width: 65ch; }
+.marker {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 3px 7px;
+  white-space: nowrap;
+  margin-top: 3px;
+}
+ul.findings li > div { min-width: 0; }
+
+/* ---------- cluster list ---------- */
+
+dl.clusters { margin: 0; display: flex; flex-direction: column; gap: 11px; }
+dl.clusters > div { display: grid; grid-template-columns: 84px 1fr; gap: 14px; align-items: baseline; max-width: 65ch; }
+dl.clusters dt { font-family: var(--mono); font-size: 0.72rem; font-weight: 600; color: var(--muted); }
+dl.clusters dd { margin: 0; min-width: 0; font-size: 0.97rem; }
+
+/* ---------- toolkit ---------- */
+
+section.toolkit { padding-block: 52px; }
+.tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 24px 32px; }
+.tool-group h4 {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 7px;
+}
+.tool-group p { font-size: 0.93rem; margin: 0; color: var(--fg); }
+
+/* ---------- evidence links ---------- */
+
+.links { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 26px; }
+.links a {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  padding: 7px 12px;
+  text-decoration: none;
+}
+.links a:hover { background: var(--accent); color: var(--bg); }
+.links a:focus-visible, .contact a:focus-visible, footer a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* ---------- experience ---------- */
+
+section.experience { padding-block: 52px; border-bottom: 1px solid var(--line); }
+.role { margin-bottom: 26px; max-width: 65ch; }
+.role:last-child { margin-bottom: 0; }
+.role-head { font-family: var(--display); font-weight: 600; font-size: 1.05rem; margin: 0 0 2px; }
+.role-meta { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin: 0 0 10px; }
+
+/* ---------- footer ---------- */
+
+footer {
+  border-top: 2px solid var(--fg);
+  padding-block: 28px 0;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+footer a { color: var(--accent); text-decoration: none; border-bottom: 1px solid currentColor; }
+
+@media (max-width: 460px) {
+  body { font-size: 16px; }
+  dl.clusters > div { grid-template-columns: 1fr; gap: 2px; }
+  .masthead { padding-block: 44px 32px; }
+}
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <h1>Kavya Mahendran</h1>
+    <p class="standfirst">MSc Management and Business Analytics with an engineering background. I work in the space between data and decisions. That means understanding what a business needs, digging into the numbers, and turning them into recommendations people can act on.</p>
+    <div class="contact">
+      <span>Oxford, United Kingdom</span>
+      <span>Right to work: Student visa to 30 Jan 2027, applying for Graduate visa Dec 2026 (no sponsorship needed)</span>
+      <a href="mailto:kavyamahendran535@gmail.com">kavyamahendran535@gmail.com</a>
+      <a href="https://www.linkedin.com/in/kavya-mahendran" target="_blank" rel="noopener">linkedin.com/in/kavya-mahendran</a>
+    </div>
+  </header>
+
+  <!-- ============ EXPERIENCE ============ -->
+  <section class="experience">
+    <p class="eyebrow">Work experience</p>
+    <h2>Using data to change real decisions</h2>
+
+    <div class="role">
+      <p class="role-head">Café Assistant &amp; Back-Office Support</p>
+      <p class="role-meta">Vaults &amp; Garden Café, Oxford · Oct 2025 to Mar 2026</p>
+      <ul class="findings">
+        <li><span class="marker">10%</span><div>Cut perishable waste by around 10% by analysing weekly sales data, spotting slow-moving stock and reducing its orders.</div></li>
+        <li><span class="marker">Weekly</span><div>Built the sales reports the manager used to decide staffing and stock, and matched rotas to expected footfall.</div></li>
+        <li><span class="marker">Daily</span><div>Reconciled cash and card takings at close, so the day's figures were accurate and could be trusted.</div></li>
+      </ul>
+    </div>
+
+    <div class="role">
+      <p class="role-head">Crew Member</p>
+      <p class="role-meta">Burger King, Oxford · May 2026 to present</p>
+      <p>Fast, friendly service to customers under strict service-time targets in a high-volume restaurant.</p>
+    </div>
+  </section>
+
+  <!-- ============ PROJECT 1 ============ -->
+  <section class="project">
+    <p class="eyebrow">Project 01 · Fraud analytics &amp; SQL</p>
+    <h2>Which card payments are most likely to be fraud?</h2>
+
+    <div class="frontmatter">
+      <div class="fm-cell"><span class="fm-key">Data</span><span class="fm-val">881,441 card transactions</span></div>
+      <div class="fm-cell"><span class="fm-key">Period</span><span class="fm-val">Jan to Dec 2025</span></div>
+      <div class="fm-cell"><span class="fm-key">Fraud rate</span><span class="fm-val">1.06% (9,368 cases)</span></div>
+      <div class="fm-cell"><span class="fm-key">Stack</span><span class="fm-val">SQL (SQLite) · Python · SVG dashboard</span></div>
+    </div>
+
+    <div class="links">
+      <a href="fraud_dashboard.html">View the dashboard</a>
+      <a href="fraud_analysis.sql">Read the SQL</a>
+    </div>
+
+    <p>Fraud is rare, which is what makes it hard to catch: almost everything an analyst looks at is genuine. I wanted to find the signals that separate fraud from normal spending, then test whether simple rules built on those signals could catch most of it without flooding a team with false alarms.</p>
+
+    <p>Real bank data is confidential, so I used 881,441 simulated transactions from 999 customers, generated with Sparkov, the open-source simulator behind the well-known Kaggle fraud dataset. I loaded them into SQLite and did all the analysis in SQL, using GROUP BY, CASE WHEN, a JOIN to a customers table, CTEs and the LAG window function.</p>
+
+    <h3>Checking the data first</h3>
+    <p>The first load failed because 117,209 transaction IDs were used more than once. Comparing the repeated rows showed they were different transactions sharing an ID, not double payments, so deleting them would have thrown away 13% of the data. I gave every transaction a new unique ID and re-checked: zero duplicates, and no missing amounts, times, categories or labels. I also dropped names, addresses and card numbers, and gave each customer an anonymous ID.</p>
+
+    <h3>What separates fraud from genuine spending</h3>
+    <ul class="findings">
+      <li><span class="marker">Time</span><div>Fraud runs at about 0.2% during the day and jumps to 3 to 5% between 22:00 and 03:59.</div></li>
+      <li><span class="marker">Amount</span><div>Over a third of payments between $500 and $999 were fraud. The average fraud was $533 against $69 for a genuine payment, so fraud was 1.06% of transactions but 7.7% of the money.</div></li>
+      <li><span class="marker">Velocity</span><div>Payments made within 10 minutes of the customer's previous one were about five times riskier than those 1 to 6 hours apart.</div></li>
+      <li><span class="marker">Category</span><div>Online shopping, online miscellaneous and in-store grocery had the highest fraud rates.</div></li>
+    </ul>
+
+    <h3>Testing detection rules</h3>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Rule</th><th>Alerts/day</th><th>Precision</th><th>Recall</th><th>Value caught</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Amount &ge; $200</td><td>149</td><td>13.2%</td><td>76.5%</td><td>98.9%</td></tr>
+          <tr><td>Night (22:00 to 03:59)</td><td>574</td><td>3.8%</td><td>85.0%</td><td>84.6%</td></tr>
+          <tr><td>High-risk category</td><td>522</td><td>2.9%</td><td>59.0%</td><td>64.4%</td></tr>
+          <tr class="best"><td>Amount &ge; $200 and night</td><td>49</td><td>34.0%</td><td>65.1%</td><td>83.8%</td></tr>
+          <tr><td>Amount &ge; $200 and high-risk category</td><td>49</td><td>26.4%</td><td>50.1%</td><td>64.1%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="caption">Precision: share of alerts that were really fraud. Recall: share of all fraud caught. Value caught: share of the money lost to fraud that the rule would have flagged.</p>
+
+    <p>Each signal on its own raises too many alerts. Combining amount and time cut them to 49 a day, about 2% of transactions, while still catching 65% of fraud cases and 84% of the money lost, with one alert in three being real fraud.</p>
+
+    <h3>What I would do differently</h3>
+    <ul class="findings">
+      <li><span class="marker">01</span><div>Set the rule on earlier months and test it on later ones, so it is not graded on the same data it was built from.</div></li>
+      <li><span class="marker">02</span><div>Treat the rates as patterns, not real-world levels. In this simulated data, 975 of 999 customers had a fraud episode, far more than in real life.</div></li>
+      <li><span class="marker">03</span><div>Add a velocity rule and compare the rules with a machine learning model trained on the same features.</div></li>
+    </ul>
+  </section>
+
+  <!-- ============ PROJECT 2 ============ -->
+  <section class="project">
+    <p class="eyebrow">Project 02 · Machine learning &amp; generative AI</p>
+    <h2>What drives the price of an Airbnb listing in New York?</h2>
+
+    <div class="frontmatter">
+      <div class="fm-cell"><span class="fm-key">Data</span><span class="fm-val">47,660 NYC listings</span></div>
+      <div class="fm-cell"><span class="fm-key">Features</span><span class="fm-val">231 after encoding</span></div>
+      <div class="fm-cell"><span class="fm-key">Environment</span><span class="fm-val">AWS SageMaker &amp; S3</span></div>
+      <div class="fm-cell"><span class="fm-key">Stack</span><span class="fm-val">Python · scikit-learn · FAISS</span></div>
+    </div>
+
+    <p>Short-term rental hosts set prices largely by instinct. I wanted to know whether listing attributes alone could explain enough of the variation in price to be useful, and which of those attributes carry the most weight.</p>
+
+    <p>I took the public New York City Airbnb dataset into an AWS environment, storing it in S3 and working in SageMaker notebooks. Cleaning meant handling missing values, dropping identifier columns with no predictive value, encoding categoricals and scaling numerics. The modelling set that came out of it held 47,660 listings across 231 features.</p>
+
+    <h3>Model comparison</h3>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Model</th><th>MAE&nbsp;($)</th><th>RMSE&nbsp;($)</th><th>R²</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Linear regression</td><td>42.42</td><td>62.08</td><td>0.462</td></tr>
+          <tr><td>Decision tree</td><td>52.98</td><td>81.30</td><td>0.077</td></tr>
+          <tr class="best"><td>K-nearest neighbours (k=7)</td><td>41.61</td><td>61.97</td><td>0.464</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="caption">80:20 train/test split. KNN and linear regression are effectively tied. The decision tree was left unconstrained and overfits badly, which the gap between its training and test performance makes plain.</p>
+
+    <p>KNN's advantage over linear regression is noise. At 0.464 against 0.462 the two are tied, so linear regression wins on interpretability and speed, and KNN's prediction cost grows with the dataset. The exploratory analysis showed room type and borough as the clearest price drivers: entire homes and Manhattan listings sit well above the rest.</p>
+
+    <h3>Market segmentation</h3>
+    <p>Alongside the predictive work, I used K-Means to group listings by price, review activity, minimum stay and year-round availability. Four clusters gave the clearest separation:</p>
+
+    <dl class="clusters">
+      <div><dt>Cluster 0</dt><dd>Heavily reviewed, consistently active listings. This is the high-demand core of the market.</dd></div>
+      <div><dt>Cluster 1</dt><dd>Low availability and little review activity, averaging $122.77. Occasional or seasonal hosts.</dd></div>
+      <div><dt>Cluster 2</dt><dd>Minimum stays averaging over 400 nights, with almost no reviews. These are not genuine short-term rentals. Most are probably dormant listings, or hosts using minimum-stay settings to stay visible without taking bookings.</dd></div>
+      <div><dt>Cluster 3</dt><dd>The highest average prices combined with high year-round availability. These rooms are expensive and rarely booked, which was the clearest commercial signal in the analysis. They are priced above what the market will pay.</dd></div>
+    </dl>
+
+    <h3>Retrieval-augmented document assistant</h3>
+    <p>The second half of the project built a question-answering system over three publicly available PDF documents. I split the text into 1,000-character chunks with 200-character overlaps, producing 1,154 chunks, converted each to a vector embedding using the text-embedding-3-small model, and stored them in a FAISS vector database for semantic search. Every answer was logged with its source document, chunk IDs and token counts, so it could be checked against the original text.</p>
+
+    <p>I then compared one-shot, few-shot and step-by-step prompting on the same question and the same retrieved chunks, judging each on answer quality and token cost. Step-by-step gave the most structured and detailed answer, at 1,129 tokens against 937 for one-shot, so roughly 20% more cost for a clearly better answer. That is a trade-off worth stating openly.</p>
+
+    <h3>What I would do differently</h3>
+    <ul class="findings">
+      <li><span class="marker">01</span><div>Constrain the decision tree. Running it unpruned, with no depth or leaf-size limit, guaranteed the overfitting the results show. A bounded tree or a random forest would be the obvious next step.</div></li>
+      <li><span class="marker">02</span><div>Treat Cluster 2 as a data-quality finding instead of a market segment. A 400-night minimum stay says more about how the platform is being used than about guest demand.</div></li>
+      <li><span class="marker">03</span><div>An R² near 0.46 means more than half the variation in price sits outside the features available. Location at a finer grain than borough, and photograph quality, are the obvious missing variables.</div></li>
+    </ul>
+  </section>
+
+  <!-- ============ PROJECT 3 ============ -->
+  <section class="project">
+    <p class="eyebrow">Project 03 · Business intelligence</p>
+    <h2>Why are people leaving? An attrition dashboard for managers</h2>
+
+    <div class="frontmatter">
+      <div class="fm-cell"><span class="fm-key">Subject</span><span class="fm-val">ConnectLab (HR case study)</span></div>
+      <div class="fm-cell"><span class="fm-key">Tool</span><span class="fm-val">Power BI</span></div>
+      <div class="fm-cell"><span class="fm-key">Audience</span><span class="fm-val">Managers and HR leads</span></div>
+      <div class="fm-cell"><span class="fm-key">Module</span><span class="fm-val">MSc Business Intelligence</span></div>
+    </div>
+
+    <p>Every employee who leaves costs a business in recruiting, onboarding and lost knowledge. ConnectLab knew some people were leaving but not where, or why. I built a Power BI dashboard so managers could see where attrition was concentrated and act on it before it turned into a bigger problem.</p>
+
+    <h3>Preparing the data</h3>
+    <p>The HR data needed work before it could be trusted. I removed duplicate employee records, excluded rows with missing or invalid values in the attrition, department and job role fields, and standardised department names, job titles and Yes/No attrition labels into one consistent format. Without that step, the same department could appear under two names and the rates would be wrong.</p>
+
+    <h3>What the dashboard shows</h3>
+    <p>The layout moves from the big picture to the detail. It opens with overall attrition, then shows attrition rates by department and by job role, normalised so departments of different sizes can be compared fairly. Below that, it breaks attrition down by salary quartile and overtime, by years since last promotion, and by age and gender.</p>
+
+    <h3>Findings</h3>
+    <ul class="findings">
+      <li><span class="marker">01</span><div>Attrition was highest among staff in the lowest salary quartile who also worked overtime. Better-paid staff without overtime were far less likely to leave, so pay and workload need to be looked at together.</div></li>
+      <li><span class="marker">02</span><div>The longer someone went without a promotion, the more likely they were to leave. Clearer career paths are a practical lever.</div></li>
+      <li><span class="marker">03</span><div>Turnover clustered in particular departments and roles, so targeted retention plans for high-risk roles would do more than one company-wide programme.</div></li>
+    </ul>
+  </section>
+
+  <!-- ============ PROJECT 4 ============ -->
+  <section class="project">
+    <p class="eyebrow">Project 04 · Data-driven decision making</p>
+    <h2>Could Hertz's bankruptcy have been seen coming?</h2>
+
+    <div class="frontmatter">
+      <div class="fm-cell"><span class="fm-key">Subject</span><span class="fm-val">Hertz Global Holdings</span></div>
+      <div class="fm-cell"><span class="fm-key">Period</span><span class="fm-val">2017 to 2020</span></div>
+      <div class="fm-cell"><span class="fm-key">Data</span><span class="fm-val">Orbis · MarketLine · SEC 10-K</span></div>
+      <div class="fm-cell"><span class="fm-key">Stack</span><span class="fm-val">Python · financial ratios · regression</span></div>
+    </div>
+
+    <p>Hertz filed for Chapter 11 bankruptcy in May 2020, and the usual story blames COVID. I wanted to test that story against the numbers: was the business healthy until the pandemic hit, or were the warning signs already there?</p>
+
+    <h3>Data and approach</h3>
+    <p>I combined financial data from the Orbis database, MarketLine industry profiles and Hertz's 2019 and 2020 annual reports and 10-K filing. The preparation followed five steps: collection, quality check, standardisation, grouping ratios into profitability, liquidity, solvency and operations, and trend analysis. I then worked through the analysis in three layers: descriptive (what happened), diagnostic (why) and predictive (what was coming).</p>
+
+    <h3>What the numbers showed</h3>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Indicator</th><th>Finding</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Revenue, 2019 to 2020</td><td>$9.78bn to $5.26bn (down 46%)</td></tr>
+          <tr><td>Net result, 2020</td><td>$1.7bn loss</td></tr>
+          <tr><td>Total liabilities, pre-pandemic</td><td>Over $19bn</td></tr>
+          <tr><td>Shareholders' equity, 2020</td><td>Minus $9.2bn</td></tr>
+          <tr><td>Current ratio</td><td>Below 1.0 throughout</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="caption">Sources: Orbis, Hertz annual reports 2019 and 2020, SEC 10-K.</p>
+
+    <p>The pandemic did not create Hertz's problems. It exposed them. Revenue looked stable through 2019, but that hid shrinking margins, heavy debt taken on to fund the fleet, and a current ratio that meant Hertz could not cover its short-term obligations. A cost base built on owned vehicles, airport leases and maintenance could not shrink when demand disappeared.</p>
+
+    <h3>The forecast</h3>
+    <p>A linear regression on the 2017 to 2020 revenue trend projected continued decline without a change in strategy. The ratios were flashing warnings by 2018, two years before the bankruptcy. With forecasting built into decision-making, there was time to restructure debt and cut costs.</p>
+
+    <h3>Recommendations</h3>
+    <ul class="findings">
+      <li><span class="marker">01</span><div>Financial risk management: reduce reliance on debt, build liquidity reserves, and set solvency KPI thresholds that trigger action.</div></li>
+      <li><span class="marker">02</span><div>Cost agility: size the fleet dynamically using demand data and cut underused assets in quiet periods.</div></li>
+      <li><span class="marker">03</span><div>Predictive analytics: real-time financial dashboards, forecasting built into planning cycles, and scenario planning for shocks.</div></li>
+    </ul>
+  </section>
+
+  <!-- ============ PROJECT 5 ============ -->
+  <section class="project">
+    <p class="eyebrow">Project 05 · Strategy &amp; operations</p>
+    <h2>Why a data-sophisticated retailer still failed on food waste</h2>
+
+    <div class="frontmatter">
+      <div class="fm-cell"><span class="fm-key">Subject</span><span class="fm-val">Tesco PLC</span></div>
+      <div class="fm-cell"><span class="fm-key">Format</span><span class="fm-val">MSc business research project</span></div>
+      <div class="fm-cell"><span class="fm-key">Methods</span><span class="fm-val">PESTEL · Five Forces · VRIO</span></div>
+      <div class="fm-cell"><span class="fm-key">Assessment</span><span class="fm-val">Written report and viva defence</span></div>
+    </div>
+
+    <p>Tesco is among the most data-capable retailers in Britain. It has decades of loyalty-card behaviour, sophisticated demand forecasting and a mature commercial analytics function. It also has a public record of falling short on food waste. My project asked how both of those things can be true at once.</p>
+
+    <p>The argument I arrived at: Tesco's commercial data sophistication has not been converted into operational data governance. The capability exists where it drives revenue and is markedly thinner where it would drive waste reduction. That is a structural problem, and it explains why the target slipped while the forecasting stayed where it was.</p>
+
+    <h3>Approach</h3>
+    <p>I built the competitive picture using PESTEL, Porter's Five Forces, a VRIO analysis of Tesco's resources and a comparison with five UK rivals: Sainsbury's, Aldi, Lidl, Asda and Morrisons. I then tracked Tesco's financial ratios year on year from its annual report. Revenue grew to £73.7bn in FY2025/26, but adjusted operating margin slipped from 4.5% to 4.3% and ROCE from 14.6% to 14.4%, as Tesco invested in price and market share.</p>
+
+    <p>The food waste picture centred on the 2024 surplus food scandal, when edible surplus was not properly redistributed and Tesco ended its contract with a waste processor. Tesco has cut operational food waste by 24%, but pushed its 50% reduction target from 2025 to 2030. For the corporate responsibility dimension I worked through Freeman's stakeholder theory, Carroll's CSR pyramid, the Triple Bottom Line and Suchman's legitimacy theory, and mapped six stakeholder groups by their interests, how the issue affected them and Tesco's response.</p>
+
+    <h3>Recommendations</h3>
+    <p>I closed with four recommendations: AI demand forecasting, digital supply chain traceability, a supplier sustainability framework and an ESG performance dashboard. Each was ranked on business impact against implementation effort and given an owner, a 6 to 18 month timeline, a KPI and a risk assessment. A recommendation nobody can execute is not a recommendation.</p>
+
+    <p>The work was defended in a viva, so the argument had to hold up under questioning as well as on the page.</p>
+  </section>
+
+  <!-- ============ PROJECT 6 ============ -->
+  <section class="project">
+    <p class="eyebrow">Project 06 · Engineering capstone</p>
+    <h2>Holding a hybrid solar, wind and battery grid steady</h2>
+
+    <div class="frontmatter">
+      <div class="fm-cell"><span class="fm-key">Context</span><span class="fm-val">BE final-year project, 2025</span></div>
+      <div class="fm-cell"><span class="fm-key">Team</span><span class="fm-val">Two engineers</span></div>
+      <div class="fm-cell"><span class="fm-key">Built with</span><span class="fm-val">Power electronics, Arduino</span></div>
+      <div class="fm-cell"><span class="fm-key">Published</span><span class="fm-val">TIJER, February 2025</span></div>
+    </div>
+
+    <p>Solar and wind do not produce steady power. A grid needs steady power. My final-year project built a system that takes solar, wind and battery storage, conditions all three into one stable supply, converts it to grid-compatible AC, and monitors the whole thing for faults.</p>
+
+    <p>Each source needs different treatment. Solar runs through a SEPIC converter, which can step voltage either up or down depending on what the panels are producing. Ours took 20V in and held 37.8V out. Wind arrives as AC and goes through a dedicated AC to DC converter. The battery sits on a bidirectional converter so it can charge when generation exceeds demand and discharge when it falls short. All three feed a single-phase inverter, and a proportional-integral control algorithm holds the voltage steady across the lot.</p>
+
+    <p>The energy management logic decides, moment to moment, whether the solar converter should run at its maximum power point or back off. That depends on three things at once: what the renewables are generating, what the load is asking for, and how much charge the battery is holding.</p>
+
+    <h3>The monitoring layer</h3>
+    <p>A phasor measurement unit samples the amplitude and phase angle of voltage and current at points across the grid, time-stamped by GPS so readings from different locations can be lined up. The data arrives fast and in volume, which is the case for machine learning. The design applies regression models, decision trees and neural networks to that stream for anomaly detection, fault classification and load forecasting. The accuracy bar for synchrophasor measurement is a total vector error below one percent in steady state.</p>
+
+    <p>Worth being clear about the split. The part we built and measured was the power conversion hardware and its control loop. The machine learning monitoring layer was designed and simulated, not deployed against live grid data.</p>
+
+    <p>The work was published in TIJER (ISSN 2349-9249), Volume 12 Issue 2, February 2025.</p>
+  </section>
+
+  <!-- ============ PROJECT 7 ============ -->
+  <section class="project">
+    <p class="eyebrow">Project 07 · Embedded systems</p>
+    <h2>Two sensor systems that act on what they measure</h2>
+
+    <p>Both of these are undergraduate Arduino builds. They are small, but they are where I first worked with live sensor data and had to decide what a system should do when a reading crosses a threshold.</p>
+
+    <h3>Water leak detection and shut-off</h3>
+    <p>A four-person project on preventing water loss in pipework. Ultrasonic and flow sensors watch the line. When the system detects a leak it closes the valve on the affected section and reports the flow rate, so a problem gets caught before it becomes damage. It also reads pH, which turns the same rig into a basic water quality monitor. We scoped a GSM extension to text the location of a leak to whoever maintains the network, though we did not build it.</p>
+
+    <h3>Soil moisture and automated irrigation</h3>
+    <p>Moisture sensors sit in the soil at several points. An Arduino reads them continuously, and when moisture drops below a set threshold it triggers a relay that opens the pump or valve until the soil is back in range. The point is that irrigation responds to what the ground actually needs instead of running on a timer, which is where most water in conventional irrigation gets wasted.</p>
+  </section>
+
+  <!-- ============ TOOLKIT ============ -->
+  <section class="toolkit">
+    <p class="eyebrow">Toolkit</p>
+    <div class="tool-grid">
+      <div class="tool-group">
+        <h4>Programming</h4>
+        <p>SQL (SQLite): JOINs, GROUP BY, CASE WHEN, CTEs and window functions. Python, with pandas, NumPy, scikit-learn, Matplotlib and Seaborn. Jupyter Notebook and Git.</p>
+      </div>
+      <div class="tool-group">
+        <h4>Analysis</h4>
+        <p>Data cleaning, profiling and validation, fraud pattern analysis and rule testing (precision and recall), root cause analysis, financial ratio analysis, regression, clustering, statistical testing, time series forecasting.</p>
+      </div>
+      <div class="tool-group">
+        <h4>Cloud &amp; AI</h4>
+        <p>AWS SageMaker and S3. Retrieval-augmented generation, FAISS vector stores, prompt engineering.</p>
+      </div>
+      <div class="tool-group">
+        <h4>Business intelligence</h4>
+        <p>Power BI for dashboards and KPI reporting. Tableau. Excel for PivotTables, XLOOKUP and Power Query.</p>
+      </div>
+      <div class="tool-group">
+        <h4>Strategy</h4>
+        <p>Competitor and market analysis, PESTEL, Five Forces, stakeholder mapping, executive reporting.</p>
+      </div>
+      <div class="tool-group">
+        <h4>Education</h4>
+        <p>MSc Management and Business Analytics (Merit), Oxford Brookes. BE Electronics &amp; Communication Engineering, Sathyabama Institute. One published paper (TIJER, 2025).</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Looking for graduate data analyst, fraud analyst and business analyst roles in the UK.<br>
+    <a href="mailto:kavyamahendran535@gmail.com">kavyamahendran535@gmail.com</a> · <a href="https://www.linkedin.com/in/kavya-mahendran" target="_blank" rel="noopener">LinkedIn</a></p>
+  </footer>
+
+</div>

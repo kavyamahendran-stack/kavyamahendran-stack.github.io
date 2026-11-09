@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Card Fraud Pattern Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* Layout: summary tiles, then a 2-column grid of pattern charts, then the rule test and notes. */
+:root{
+  --bg:#f4f6f8; --surface:#ffffff; --ink:#14212e; --muted:#5b6b7a; --line:#dde3e9;
+  --base:#9fb3c8; --risk:#c2410c; --accent:#0f4c75; --good:#15803d;
+  --display:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1620; --surface:#16212d; --ink:#e6edf3; --muted:#9aabbb; --line:#2a3846;
+    --base:#4d6680; --risk:#fb8c4f; --accent:#7fb8e0; --good:#4ade80; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1620; --surface:#16212d; --ink:#e6edf3; --muted:#9aabbb; --line:#2a3846;
+  --base:#4d6680; --risk:#fb8c4f; --accent:#7fb8e0; --good:#4ade80; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--display);line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 48px}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 24px;align-items:flex-end;border-bottom:2px solid var(--ink);padding-bottom:14px}
+h1{font-size:clamp(24px,3.4vw,34px);margin:0;letter-spacing:-.01em;text-wrap:balance}
+.by{color:var(--muted);font-size:14px;margin:4px 0 0}
+.src{font-size:13px;color:var(--muted);max-width:440px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:20px 0}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.tile .k{font-size:13px;color:var(--muted)}
+.tile .v{font-family:var(--mono);font-size:28px;font-variant-numeric:tabular-nums;margin-top:2px}
+.tile .s{font-size:13px;color:var(--muted)}
+.tile.hot{border-left:4px solid var(--risk)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 16px 10px;min-width:0}
+.card h2{font-size:16px;margin:0}
+.card .take{font-size:13.5px;color:var(--muted);margin:2px 0 8px}
+.card.wide{grid-column:1/-1}
+svg{display:block;width:100%;height:auto}
+svg text{fill:var(--muted);font-family:var(--display);font-size:11px}
+svg .val{fill:var(--ink);font-family:var(--mono);font-size:11px}
+.gridline{stroke:var(--line);stroke-width:1}
+.bar{fill:var(--base)} .bar.r{fill:var(--risk)}
+.bar:hover{opacity:.8}
+.legend{display:flex;gap:16px;font-size:12.5px;color:var(--muted);margin:2px 0 6px;flex-wrap:wrap}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12.5px;padding:7px 9px;border-radius:6px;opacity:0;transition:opacity .1s;max-width:240px;z-index:5}
+@media (prefers-reduced-motion:reduce){#tip{transition:none}}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:640px}
+th,td{text-align:right;padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:600;color:var(--muted);font-size:12.5px}
+tr.best td{background:color-mix(in srgb,var(--good) 10%,transparent)}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:99px;border:1px solid var(--good);color:var(--good);margin-left:6px}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:14px}
+.notes h3{font-size:15px;margin:0 0 6px}
+.notes ul,.notes ol{margin:0;padding-left:18px;font-size:14px}
+.notes li{margin:4px 0}
+footer{margin-top:22px;font-size:12.5px;color:var(--muted)}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>Card Fraud Pattern Analysis</h1>
+    <p class="by"><a href="index.html">Kavya Mahendran</a> · SQL (SQLite) and Python · 2025 data · <a href="fraud_analysis.sql">View the SQL</a></p>
+  </div>
+  <p class="src">881,441 simulated card transactions from 999 customers, 1 Jan to 31 Dec 2025, generated with the open-source Sparkov simulator. Every figure below comes from the SQL queries in <code>fraud_analysis.sql</code>.</p>
+</header>
+
+<section class="tiles" id="tiles"></section>
+
+<section class="grid">
+  <div class="card"><h2>Fraud rate by hour of day</h2><p class="take">Fraud jumps from about 0.2% in the day to 3 to 5% between 22:00 and 03:59.</p><div id="c-hour"></div></div>
+  <div class="card"><h2>Fraud rate by transaction amount</h2><p class="take">Over a third of $500 to $999 payments are fraud; payments under $200 almost never are.</p><div id="c-amount"></div></div>
+  <div class="card"><h2>Fraud rate by merchant category</h2><p class="take">Online shopping, online misc and in-store grocery are the three riskiest categories.</p><div id="c-cat"></div></div>
+  <div class="card"><h2>Fraud rate by time since previous transaction</h2><p class="take">Payments within 10 minutes of the last one are 5 times riskier than those 1 to 6 hours apart.</p><div id="c-gap"></div></div>
+  <div class="card"><h2>Fraud rate by customer age</h2><p class="take">Customers aged 50 and over are targeted about twice as often as those aged 25 to 49.</p><div id="c-age"></div></div>
+  <div class="card"><h2>Monthly fraud rate</h2><p class="take">Fraud cases stay steady; the December dip is because genuine spending nearly doubles.</p><div id="c-month"></div></div>
+
+  <div class="card wide">
+    <h2>Testing simple detection rules</h2>
+    <p class="take">Precision: share of alerts that were really fraud. Recall: share of all fraud cases caught. A good rule catches most fraud without flooding analysts with false alarms.</p>
+    <div class="tablewrap"><table id="rules"></table></div>
+  </div>
+</section>
+
+<section class="notes">
+  <div class="card"><h3>Key findings</h3><ol>
+    <li>Fraud is rare (1.06% of transactions) but costly: it is 7.7% of all money spent, because the average fraud ($533) is nearly 8 times a normal payment ($69).</li>
+    <li>Time of day and amount are the strongest signals. Combined, they flag 2% of transactions but catch 65% of fraud cases and 84% of fraud value.</li>
+    <li>Fraud arrives in bursts: once a card is compromised, an average of 9.6 fraudulent payments are made on it within about a day.</li>
+    <li>Distance from home to merchant did not separate fraud (76.8 km vs 76.4 km), so it was left out of the rules.</li>
+  </ol></div>
+  <div class="card"><h3>Recommendations</h3><ol>
+    <li>Use rule R4 (amount of $200 or more at night) as a first-line alert: about 49 alerts a day, 1 in 3 of them real fraud.</li>
+    <li>After the first confirmed fraud on a card, block or step up checks at once, because the rest of the burst usually follows within hours.</li>
+    <li>Add velocity checks for rapid repeat payments, and extra protection for customers aged 50+.</li>
+    <li>Next step: train a machine learning model on these features and compare it with the rules.</li>
+  </ol></div>
+  <div class="card"><h3>Data quality and limitations</h3><ul>
+    <li>Checked row counts, date range and missing values: no missing amounts, times, categories or labels.</li>
+    <li>Found 117,209 transaction IDs re-used across different transactions in the raw data; replaced them with unique IDs and re-checked (0 duplicates).</li>
+    <li>Personal details (names, addresses, card numbers) were dropped; customers carry anonymous IDs.</li>
+    <li>The data is simulated. 975 of 999 customers have a fraud episode, far more than in real life, so rates show patterns, not real-world levels.</li>
+  </ul></div>
+</section>
+<footer>Built with SQLite 3.45, Python and hand-coded SVG charts. Amounts are in US dollars, as generated by the simulator.</footer>
+</div>
+<div id="tip" role="tooltip"></div>
+
+<script>
+const D = {"dq":{"cols":["total_transactions","customers","first_date","last_date","fraud_transactions"],"rows":[[881441,999,"2025-01-01","2025-12-31",9368]]},"missing":{"cols":["missing_amount","missing_category","missing_time","missing_label"],"rows":[[0,0,0,0]]},"dups":{"cols":["duplicate_ids"],"rows":[[0]]},"kpi":{"cols":["transactions","fraud_cases","fraud_rate_pct","total_value","fraud_value","fraud_share_of_value_pct","avg_fraud_amount","avg_genuine_amount"],"rows":[[881441,9368,1.06,65091125.0,4996785.0,7.7,533.39,68.91]]},"category":{"cols":["category","transactions","fraud_cases","fraud_rate_pct","fraud_value"],"rows":[["shopping_net",66022,2137,3.24,1677532.0],["misc_net",40750,1162,2.85,776977.0],["grocery_pos",83856,2229,2.66,764777.0],["shopping_pos",87712,1138,1.3,845675.0],["gas_transport",74890,758,1.01,158248.0],["travel",27979,146,0.52,74736.0],["misc_pos",57137,297,0.52,175869.0],["grocery_net",36964,171,0.46,33107.0],["entertainment",63965,280,0.44,185841.0],["personal_care",62724,257,0.41,76372.0],["food_dining",65468,221,0.34,97966.0],["kids_pets",76586,205,0.27,43841.0],["health_fitness",54661,148,0.27,31792.0],["home",82727,219,0.26,54052.0]]},"hour":{"cols":["hour","transactions","fraud_cases","fraud_rate_pct"],"rows":[[0,28853,901,3.12],[1,28880,801,2.77],[2,29063,868,2.99],[3,29251,898,3.07],[4,28178,57,0.2],[5,27874,70,0.25],[6,28270,53,0.19],[7,28187,68,0.24],[8,28573,68,0.24],[9,28276,65,0.23],[10,28171,65,0.23],[11,28167,73,0.26],[12,44789,101,0.23],[13,44694,91,0.2],[14,44665,102,0.23],[15,44858,91,0.2],[16,44739,91,0.2],[17,44840,82,0.18],[18,44254,76,0.17],[19,44422,83,0.19],[20,44296,104,0.23],[21,44745,67,0.15],[22,46549,2213,4.75],[23,46847,2280,4.87]]},"amount":{"cols":["amount_band","transactions","fraud_cases","fraud_rate_pct"],"rows":[["1. Under $50",470564,1972,0.42],["2. $50 to $199",356485,227,0.06],["3. $200 to $499",41519,2632,6.34],["4. $500 to $999",9153,3310,36.16],["5. $1,000+",3720,1227,32.98]]},"age":{"cols":["age_band","transactions","fraud_cases","fraud_rate_pct"],"rows":[["18-24",126917,1352,1.07],["25-34",191481,1436,0.75],["35-49",277898,2074,0.75],["50-64",164475,2551,1.55],["65+",120670,1955,1.62]]},"month":{"cols":["month","transactions","fraud_cases","fraud_rate_pct"],"rows":[["2025-01",50114,723,1.44],["2025-02",45792,627,1.37],["2025-03",68070,889,1.31],["2025-04",64426,886,1.38],["2025-05",72205,822,1.14],["2025-06",81535,1023,1.25],["2025-07",82450,885,1.07],["2025-08",86311,695,0.81],["2025-09",63968,823,1.29],["2025-10",66985,672,1.0],["2025-11",69472,712,1.02],["2025-12",130113,611,0.47]]},"gap":{"cols":["gap_band","transactions","fraud_cases","fraud_rate_pct"],"rows":[["0. First transaction",999,122,12.21],["1. Under 10 min",49780,1488,2.99],["2. 10 to 59 min",188134,3266,1.74],["3. 1 to 6 hours",339678,1935,0.57],["4. 6 to 24 hours",232542,1991,0.86],["5. Over 1 day",70308,566,0.81]]},"burst":{"cols":["customers_affected","avg_fraud_txns_per_customer","avg_days_from_first_to_last_fraud","max_fraud_txns"],"rows":[[975,9.6,1.0,16]]},"distance":{"cols":["is_fraud","avg_distance_km"],"rows":[[0,76.4],[1,76.8]]},"rules":{"cols":["rule","alerts","fraud_caught","precision_pct","recall_pct","fraud_value_caught_pct","alerts_per_day"],"rows":[["R1 Amount >= $200",54392,7169,13.2,76.5,98.9,149.0],["R2 Night (22:00-03:59)",209443,7961,3.8,85.0,84.6,574.0],["R3 High-risk category",190628,5528,2.9,59.0,64.4,522.0],["R4 Amount >= $200 AND night",17920,6100,34.0,65.1,83.8,49.0],["R5 Amount >= $200 AND high-risk category",17798,4694,26.4,50.1,64.1,49.0]]}};
+const tip = document.getElementById('tip');
+const fmt = n => n.toLocaleString('en-GB');
+function showTip(e, html){ tip.innerHTML = html; tip.style.opacity = 1; moveTip(e); }
+function moveTip(e){ const x = Math.min(e.clientX + 12, innerWidth - 250); tip.style.left = x + 'px'; tip.style.top = (e.clientY + 14) + 'px'; }
+function hideTip(){ tip.style.opacity = 0; }
+
+// Vertical bar chart: items [{label, value, risky, tip}]
+function bars(el, items, {h=220, unit='%', every=1, labelVals=true}={}){
+  const W = 560, padL = 36, padR = 8, padT = 18, padB = 34;
+  const max = Math.max(...items.map(d => d.value));
+  const step = niceStep(max); const top = Math.ceil(max / step) * step;
+  const iw = W - padL - padR, ih = h - padT - padB, bw = iw / items.length;
+  let s = `<svg viewBox="0 0 ${W} ${h}" role="img" aria-label="${el.previousElementSibling.textContent}">`;
+  for (let v = 0; v <= top + 1e-9; v += step){
+    const y = padT + ih - v / top * ih;
+    s += `<line class="gridline" x1="${padL}" x2="${W-padR}" y1="${y}" y2="${y}"/><text x="${padL-6}" y="${y+4}" text-anchor="end">${+v.toFixed(1)}${unit}</text>`;
+  }
+  items.forEach((d, i) => {
+    const bh = Math.max(d.value / top * ih, 1), x = padL + i * bw + bw * 0.15, w = bw * 0.7, y = padT + ih - bh;
+    s += `<path class="bar${d.risky ? ' r' : ''}" d="M${x},${padT+ih} V${y+Math.min(3,bh)} q0,-3 3,-3 h${w-6} q3,0 3,3 V${padT+ih} Z" data-tip="${d.tip}"/>`;
+    if (labelVals && (d.risky || items.length <= 8)) s += `<text class="val" x="${x+w/2}" y="${y-5}" text-anchor="middle">${d.value}${unit}</text>`;
+    if (i % every === 0) s += `<text x="${x+w/2}" y="${h-padB+15}" text-anchor="middle">${d.label}</text>`;
+  });
+  el.innerHTML = s + '</svg>';
+}
+// Horizontal bars for long category names
+function hbars(el, items){
+  const W = 560, rowH = 22, padL = 112, padR = 52, padT = 4, h = padT + items.length * rowH + 4;
+  const max = Math.max(...items.map(d => d.value));
+  let s = `<svg viewBox="0 0 ${W} ${h}" role="img" aria-label="${el.previousElementSibling.textContent}">`;
+  items.forEach((d, i) => {
+    const y = padT + i * rowH, w = Math.max(d.value / max * (W - padL - padR), 1);
+    s += `<text x="${padL-8}" y="${y+14}" text-anchor="end">${d.label}</text>`;
+    s += `<path class="bar${d.risky ? ' r' : ''}" d="M${padL},${y+3} h${w-3} q3,0 3,3 v${rowH-12} q0,3 -3,3 h${-(w-3)} Z" data-tip="${d.tip}"/>`;
+    s += `<text class="val" x="${padL+w+6}" y="${y+14}">${d.value}%</text>`;
+  });
+  el.innerHTML = s + '</svg>';
+}
+// Line chart for the monthly trend
+function line(el, items){
+  const W = 560, h = 220, padL = 36, padR = 12, padT = 18, padB = 34;
+  const max = Math.max(...items.map(d => d.value)), step = niceStep(max), top = Math.ceil(max/step)*step;
+  const iw = W - padL - padR, ih = h - padT - padB, dx = iw / (items.length - 1);
+  const pt = (d, i) => [padL + i*dx, padT + ih - d.value/top*ih];
+  let s = `<svg viewBox="0 0 ${W} ${h}" role="img" aria-label="Monthly fraud rate">`;
+  for (let v = 0; v <= top + 1e-9; v += step){ const y = padT + ih - v/top*ih; s += `<line class="gridline" x1="${padL}" x2="${W-padR}" y1="${y}" y2="${y}"/><text x="${padL-6}" y="${y+4}" text-anchor="end">${+v.toFixed(1)}%</text>`; }
+  const pts = items.map(pt);
+  s += `<path d="M${pts.map(p=>p.join(',')).join(' L')} L${pts.at(-1)[0]},${padT+ih} L${padL},${padT+ih} Z" fill="var(--accent)" opacity=".08"/>`;
+  s += `<path d="M${pts.map(p=>p.join(',')).join(' L')}" fill="none" stroke="var(--accent)" stroke-width="2"/>`;
+  items.forEach((d, i) => { const [x,y] = pts[i]; const last = i === items.length-1;
+    s += `<circle cx="${x}" cy="${y}" r="${last?5:3.5}" fill="${last?'var(--risk)':'var(--accent)'}" stroke="var(--surface)" stroke-width="2"/>`;
+    s += `<rect x="${x-dx/2}" y="${padT}" width="${dx}" height="${ih}" fill="transparent" data-tip="${d.tip}"/>`;
+    s += `<text x="${x}" y="${h-padB+15}" text-anchor="middle">${d.label}</text>`; });
+  s += `<text class="val" x="${pts.at(-1)[0]-10}" y="${pts.at(-1)[1]+4}" text-anchor="end">${items.at(-1).value}%</text>`;
+  el.innerHTML = s + '</svg>';
+}
+function niceStep(max){ const raw = max / 4, p = Math.pow(10, Math.floor(Math.log10(raw))); return [1,2,2.5,5,10].map(m=>m*p).find(v => v >= raw); }
+function legend(el, riskText){ el.insertAdjacentHTML('beforebegin', `<div class="legend"><span><span class="sw" style="background:var(--risk)"></span>${riskText}</span><span><span class="sw" style="background:var(--base)"></span>Other</span></div>`); }
+const t = (label, r) => `<b>${label}</b><br>Fraud rate: ${r[3]}%<br>Fraud cases: ${fmt(r[2])}<br>Transactions: ${fmt(r[1])}`;
+
+// KPI tiles
+const k = D.kpi.rows[0];
+document.getElementById('tiles').innerHTML = [
+  ['Transactions analysed', fmt(k[0]), '999 customers, full year 2025', ''],
+  ['Fraud cases', fmt(k[1]), k[2] + '% of transactions', 'hot'],
+  ['Money lost to fraud', '$' + (k[4]/1e6).toFixed(2) + 'm', k[5] + '% of all value spent', 'hot'],
+  ['Average fraud payment', '$' + k[6].toFixed(0), 'vs $' + k[7].toFixed(0) + ' for genuine payments', '']
+].map(([a,b,c,cls]) => `<div class="tile ${cls}"><div class="k">${a}</div><div class="v">${b}</div><div class="s">${c}</div></div>`).join('');
+
+const night = [22,23,0,1,2,3];
+bars(document.getElementById('c-hour'), D.hour.rows.map(r => ({label: String(r[0]).padStart(2,'0'), value: r[3], risky: night.includes(r[0]), tip: t(String(r[0]).padStart(2,'0') + ':00 to ' + String(r[0]).padStart(2,'0') + ':59', r)})), {every: 2, labelVals: false});
+legend(document.getElementById('c-hour'), 'Night (22:00 to 03:59)');
+bars(document.getElementById('c-amount'), D.amount.rows.map(r => ({label: r[0].slice(3), value: r[3], risky: r[0] >= '3', tip: t(r[0].slice(3), r)})));
+legend(document.getElementById('c-amount'), '$200 and over');
+const top3 = ['shopping_net','misc_net','grocery_pos'];
+const catName = c => ({shopping_net:'Shopping (online)',misc_net:'Misc (online)',grocery_pos:'Grocery (in store)',shopping_pos:'Shopping (in store)',gas_transport:'Fuel & transport',travel:'Travel',misc_pos:'Misc (in store)',grocery_net:'Grocery (online)',entertainment:'Entertainment',personal_care:'Personal care',food_dining:'Food & dining',kids_pets:'Kids & pets',health_fitness:'Health & fitness',home:'Home'}[c] || c);
+hbars(document.getElementById('c-cat'), D.category.rows.map(r => ({label: catName(r[0]), value: r[3], risky: top3.includes(r[0]), tip: t(catName(r[0]), r) + '<br>Fraud value: $' + fmt(r[4])})));
+legend(document.getElementById('c-cat'), 'Top 3 risk categories');
+bars(document.getElementById('c-gap'), D.gap.rows.filter(r => !r[0].startsWith('0')).map(r => ({label: r[0].slice(3).replace(' to ','-'), value: r[3], risky: r[0].startsWith('1'), tip: t(r[0].slice(3), r)})));
+legend(document.getElementById('c-gap'), 'Under 10 minutes');
+bars(document.getElementById('c-age'), D.age.rows.map(r => ({label: r[0], value: r[3], risky: r[0] === '50-64' || r[0] === '65+', tip: t('Age ' + r[0], r)})));
+legend(document.getElementById('c-age'), 'Aged 50+');
+const mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+line(document.getElementById('c-month'), D.month.rows.map((r,i) => ({label: mon[i], value: r[3], tip: t(mon[i] + ' 2025', r)})));
+
+// Rules table
+const R = D.rules.rows;
+document.getElementById('rules').innerHTML = '<thead><tr><th>Rule</th><th>Alerts</th><th>Alerts per day</th><th>Fraud caught</th><th>Precision</th><th>Recall</th><th>Fraud value caught</th></tr></thead><tbody>' +
+  R.map(r => `<tr class="${r[0].startsWith('R4') ? 'best' : ''}"><td>${r[0]}${r[0].startsWith('R4') ? '<span class="pill">Recommended</span>' : ''}</td><td>${fmt(r[1])}</td><td>${fmt(r[6])}</td><td>${fmt(r[2])}</td><td>${r[3]}%</td><td>${r[4]}%</td><td>${r[5]}%</td></tr>`).join('') + '</tbody>';
+
+document.addEventListener('pointerover', e => { const tt = e.target.closest('[data-tip]'); if (tt) showTip(e, tt.dataset.tip); });
+document.addEventListener('pointermove', e => { if (e.target.closest('[data-tip]')) moveTip(e); else hideTip(); });
+</script>
+</body>
+</html>
